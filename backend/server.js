@@ -4,6 +4,7 @@ import fs from 'fs';
 
 const app = express();
 const port = 5000;
+const messageDataURL = './database/messages.json';
 
 app.use(json());
 app.use(cors());
@@ -17,9 +18,9 @@ app.listen(port, () => {
 });
 
 // Checking for file
-var exists = fs.existsSync('./database/data.json');
+var exists = fs.existsSync(messageDataURL);
 if (exists) {
-  var data = fs.readFileSync('./database/data.json', 'utf-8');
+  var data = fs.readFileSync(messageDataURL, 'utf-8');
   obj = JSON.parse(data);
 }
 else{
@@ -64,7 +65,7 @@ app.post('/newmessage', (req, res) => {
     let data = JSON.stringify(obj, null, 2);
 
     // Write the JSON string to file
-    fs.writeFile('./database/data.json', data, (err) => {
+    fs.writeFile(messageDataURL, data, (err) => {
       if (err) {
         console.log(err);
       }
