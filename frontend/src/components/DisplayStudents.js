@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const DisplayStudent = (props) => {
-  const [studentList, setStudentList] = useState(props.students);
+  const [studentList, setStudentList] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
 
   const courseChangeHandler = (event) => {
     setSelectedCourse(event.target.value);
   };
+
+  useEffect(() => {
+    fetch("http://localhost:5000/studentlist")
+      .then(response => response.json())
+      .then(data => setStudentList(data));
+  }, []);
 
   return (
     <div className="wrapper">
@@ -46,8 +52,13 @@ const DisplayStudent = (props) => {
           </thead>
           <tbody>
             {studentList
-              .filter((student) =>
-                student.registeredCourses.some(course => course.courseCode === selectedCourse || selectedCourse === "")
+              .filter((student) =>{
+                if (student.registeredCourses.length === 0 && selectedCourse === "") {
+                  return student;
+                }
+                else if(student.registeredCourses.some(course => course.courseCode === selectedCourse || selectedCourse === ""))
+                  return student;
+              }
               )
               .map((student) => (
                 <tr key={student.studentID}>
