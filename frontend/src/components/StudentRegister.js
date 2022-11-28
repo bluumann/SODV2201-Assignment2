@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 
 function StudentRegister(props) {
   const navigate = useNavigate();
+  const [students, setStudents] = useState([])
   const [student, updateStudentInfo] = useState({
     firstName: "",
     lastName: "",
@@ -18,95 +18,123 @@ function StudentRegister(props) {
     registeredCourses: [],
   });
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    //Input Validations
-    var isValid = true;
+    if(students.some(s => s.username.toLowerCase() === student.username.toLowerCase()))
+      alert("Username already in use.")
+    else if(students.some(s => s.email.toLowerCase() === student.email.toLowerCase()))
+      alert("Email already in use.")
+    else
+      fetch('http://localhost:5000/newstudent',{
+        method: 'POST',
+        body: JSON.stringify(student),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if(response.status >= 200 && response.status < 300)
+          navigate('/')
+        else
+          alert('Something went wrong, please try again later.')
+      })
 
-    props.students.forEach((s) => {
-      console.log("test loop");
-      console.log(s);
-      if (student.username === s.username) {
-        alert("Username is already in use! please enter a different one");
-        console.log("Username is already in use! please enter a different one");
-        isValid = false;
-      }
-    });
+    //Front end only
+    // //Input Validations
+    // var isValid = true;
 
-    if (isValid) {
-      student.studentID = GenerateNewStudentID();
+    // props.students.forEach((s) => {
+    //   console.log("test loop");
+    //   console.log(s);
+    //   if (student.username === s.username) {
+    //     alert("Username is already in use! please enter a different one");
+    //     console.log("Username is already in use! please enter a different one");
+    //     isValid = false;
+    //   }
+    // });
 
-      props.onSignup(student);
+    // if (isValid) {
+    //   student.studentID = GenerateNewStudentID();
 
-      console.log(
-        "Succesfully registered new student: " +
-          student.firstName +
-          " " +
-          student.lastName +
-          ", id: " +
-          student.studentID
-      );
-      console.log(student);
+    //   props.onSignup(student);
 
-      updateStudentInfo({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        dateOfBirth: "yyyy-mm-dd",
-        department: "",
-        program: "",
-        studentID: "",
-        username: "",
-        password: "",
-        registeredCourses: [],
-      });
-      navigate('/')
-    } else {
-      console.log("Something went wrong with the submit");
-    }
+    //   console.log(
+    //     "Succesfully registered new student: " +
+    //       student.firstName +
+    //       " " +
+    //       student.lastName +
+    //       ", id: " +
+    //       student.studentID
+    //   );
+    //   console.log(student);
 
-    function GenerateNewStudentID() {
-      var tempID;
+    //   updateStudentInfo({
+    //     firstName: "",
+    //     lastName: "",
+    //     email: "",
+    //     phone: "",
+    //     dateOfBirth: "yyyy-mm-dd",
+    //     department: "",
+    //     program: "",
+    //     studentID: "",
+    //     username: "",
+    //     password: "",
+    //     registeredCourses: [],
+    //   });
+    //   navigate('/')
+    // } else {
+    //   console.log("Something went wrong with the submit");
+    // }
 
-      var isUniqueStudentID = false;
+    // ****In use in the backend server****
+    // function GenerateNewStudentID() {
+    //   var tempID;
 
-      //This loop runs and keeps generating ids until a unique id is generated.
+    //   var isUniqueStudentID = false;
 
-      while (!isUniqueStudentID) {
-        isUniqueStudentID = true;
+    //   //This loop runs and keeps generating ids until a unique id is generated.
 
-        //Generate random number between 000000 - 999999
+    //   while (!isUniqueStudentID) {
+    //     isUniqueStudentID = true;
 
-        tempID = Math.floor(Math.random() * 999999);
+    //     //Generate random number between 000000 - 999999
 
-        props.students.forEach((s) => {
-          //Debugging logs
+    //     tempID = Math.floor(Math.random() * 999999);
 
-          //console.log('test loop')
+    //     props.students.forEach((s) => {
+    //       //Debugging logs
 
-          //console.log(s)
+    //       //console.log('test loop')
 
-          if (tempID === s.studentID) {
-            isValid = false;
+    //       //console.log(s)
 
-            console.log("id was repeated: generating new one.");
-          }
-        });
-      }
+    //       if (tempID === s.studentID) {
+    //         isValid = false;
 
-      console.log("Succesfully generated a new unique id: " + tempID);
+    //         console.log("id was repeated: generating new one.");
+    //       }
+    //     });
+    //   }
 
-      return tempID;
-    }
+    //   console.log("Succesfully generated a new unique id: " + tempID);
+
+    //   return tempID;
+    // }
   }
+
+  useEffect(() => {
+    fetch("http://localhost:5000/studentlist")
+      .then(response => response.json())
+      .then(data => setStudents(data));
+  }, []);
 
   return (
     <div className="wrapper">
       <form onSubmit={handleSubmit}>
         <h2>Name: </h2>
         <input
+          name="fname"
           type="text"
           placeholder="First Name"
           value={student.firstName}
@@ -116,6 +144,7 @@ function StudentRegister(props) {
           }
         ></input>
         <input
+          name="lname"
           type="text"
           placeholder="Last Name"
           value={student.lastName}
@@ -128,6 +157,7 @@ function StudentRegister(props) {
 
         <h2>Contact Information: </h2>
         <input
+          name="email"
           type="email"
           placeholder="Email "
           value={student.email}
@@ -137,10 +167,15 @@ function StudentRegister(props) {
           }
         />
         <input
+          name="phone"
           type="tel"
-          placeholder="Phone "
+          placeholder="123-456-7890"
           value={student.phone}
+          title="Format 123-456-7890"
           required
+          onInvalid={e => e.target.setCustomValidity('Format 123-456-7890')}
+          onInput={e => e.target.setCustomValidity('')}
+          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
           onChange={(e) =>
             updateStudentInfo({ ...student, phone: e.target.value })
           }
@@ -149,9 +184,11 @@ function StudentRegister(props) {
 
         <h2>Date of Birth: </h2>
         <input
+          name="dob"
           type="date"
           value={student.dateOfBirth}
           required
+          max={new Date().toLocaleDateString('en-ca')}
           onChange={(e) =>
             updateStudentInfo({ ...student, dateOfBirth: e.target.value })
           }
@@ -162,6 +199,7 @@ function StudentRegister(props) {
 
         <label>Select Deparment: </label>
         <select
+          name="department"
           required
           value={student.department}
           onChange={(e) =>
@@ -174,6 +212,7 @@ function StudentRegister(props) {
         </select>
         <label>Select Program: </label>
         <select
+          name="program"
           required
           value={student.program}
           onChange={(e) =>
@@ -181,7 +220,7 @@ function StudentRegister(props) {
           }
         >
           <option value=""></option>
-          <option value="Diploma(2 Years)">Diploma(2 Years)</option>
+          <option value="Diploma (2 Years)">Diploma(2 Years)</option>
           <option value="Post-Diploma (1 Year)">Post-Diploma (1 Year)</option>
           <option value="Certificate (3 Months)">Certificate (3 Months)</option>
           <option value="Certificate (6 Months)">Certificate (6 Months)</option>
@@ -190,6 +229,7 @@ function StudentRegister(props) {
         </select>
         <h2>Account Information: </h2>
         <input
+          name="username"
           type="text"
           placeholder="Enter username "
           value={student.username}
@@ -199,6 +239,7 @@ function StudentRegister(props) {
           }
         />
         <input
+          name="password"
           type="password"
           placeholder="Enter password "
           value={student.password}
