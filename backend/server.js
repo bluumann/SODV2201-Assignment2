@@ -1,7 +1,7 @@
-const _ = require("underscore");
-const cors = require("cors");
-const express = require("express");
-const fs = require("fs");
+const _ = require('underscore');
+const cors = require('cors');
+const express = require('express');
+const fs = require('fs');
 
 const app = express();
 const port = 5000;
@@ -9,7 +9,6 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 /**** WAS MADE FOR TESTING ON MY END CAN IGNORE (COLIN) CAN BE DELETED AT LATER DATE *****/
 // let objData;
@@ -174,22 +173,95 @@ app.use(express.urlencoded({ extended: true }));
 //   }
 // }
 
-app.get("/", (req, res) => {
-  res.send("BVC Course Registration Backend");
+// PETER
+// Loading courses from database/courseData.json
+if (fs.existsSync('database/courseData.json')) {
+  let data = fs.readFileSync('database/courseData.json', 'utf8');
+  courseData = JSON.parse(data);
+} else {
+  console.log(
+    'Could not load courses from database/courses.json - Check if file exists.'
+  );
+}
+
+// PETER
+// API (GET): retrieve all courses
+app.get('/api/courses', (req, res) => {
+  if (fs.existsSync('database/courseData.json')) {
+    let data = fs.readFileSync('database/courseData.json', 'utf8');
+    courseData = JSON.parse(data);
+  } else {
+    console.log(
+      'Could not load courses from database/courses.json - Check if file exists.'
+    );
+  }
+  res.send(courseData);
+});
+
+// PETER
+// API (POST): create new course
+app.post('/api/courses', (req, res) => {
+  let newCourse = {
+    courseCode: req.body.courseCode,
+    courseName: req.body.courseName,
+    courseTerm: req.body.courseTerm,
+    courseStartDate: req.body.courseStartDate,
+    courseEndDate: req.body.courseEndDate,
+    courseFees: req.body.courseFees,
+    courseDescription: req.body.courseDescription,
+  };
+
+  courseData.courses.push(newCourse);
+  res.send(newCourse);
+
+  let data = JSON.stringify(courseData, null, 2);
+  fs.writeFile('database/courseData.json', data, completed);
+  function completed() {
+    console.log('New course has been added to database/courseData.json');
+  }
+});
+
+// PETER
+// API (DELETE): delete a course
+app.delete('/api/courses/:courseCode', (req, res) => {
+  const course = courseData.courses.find(
+    c => c.courseCode === req.params.courseCode
+  );
+  if (!course)
+    return res
+      .status(404)
+      .send('The course with the given "course code" was not found.');
+
+  const index = courseData.courses.indexOf(course);
+  courseData.courses.splice(index, 1);
+
+  let data = JSON.stringify(courseData, null, 2);
+  fs.writeFile('database/courseData.json', data, completed);
+  function completed() {
+    console.log(
+      'The selected course has been deleted from database/courseData.json'
+    );
+  }
+  res.send(course);
+});
+
+app.get('/', (req, res) => {
+  res.send('BVC Course Registration Backend');
 });
 
 /***** COLIN *****/
 // For getting student info
-app.get("/studentlist", (req, res) => {
+app.get('/studentlist', (req, res) => {
   res.send(objData.Students); // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
 });
 
 // For adding students
-app.post("/newstudent", (req, res) => { // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
+app.post('/newstudent', (req, res) => {
+  // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
   const newStudentID = GenerateNewStudentID();
 
   let verified = true;
-  let msg = "Something went wrong.";
+  let msg = 'Something went wrong.';
 
   if (
     !req.body.firstName ||
@@ -203,14 +275,16 @@ app.post("/newstudent", (req, res) => { // WILL NEED TO BE UPDATED BASED ON PEDR
     !req.body.password
   ) {
     verified = false;
-    msg = "Missing information, please fill out all fields.";
+    msg = 'Missing information, please fill out all fields.';
   }
 
   if (
-    objData.Students.some((student) => student.email.toLowerCase() === req.body.email.toLowerCase())
+    objData.Students.some(
+      student => student.email.toLowerCase() === req.body.email.toLowerCase()
+    )
   ) {
     verified = false;
-    msg = "Email is already in use.";
+    msg = 'Email is already in use.';
   }
 
   if (
@@ -219,51 +293,54 @@ app.post("/newstudent", (req, res) => { // WILL NEED TO BE UPDATED BASED ON PEDR
     ) === null
   ) {
     verified = false;
-    msg = "Please submit a proper email address.";
+    msg = 'Please submit a proper email address.';
   }
 
   if (
     req.body.phone.match(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/) === null
   ) {
     verified = false;
-    msg = "Please enter a phone number with the following format: 123-456-7890";
+    msg = 'Please enter a phone number with the following format: 123-456-7890';
   }
 
   let dateOfBirth = new Date(req.body.dateOfBirth).getTime();
 
   if (
     req.body.dateOfBirth.match(/^\d{4}-\d{2}-\d{2}$/) === null ||
-    typeof dateOfBirth !== "number" ||
+    typeof dateOfBirth !== 'number' ||
     Number.isNaN(dateOfBirth) ||
     dateOfBirth > new Date().getTime()
   ) {
     verified = false;
-    msg = "Please enter an appropriate date in the format: yyyy-mm-dd";
+    msg = 'Please enter an appropriate date in the format: yyyy-mm-dd';
   }
 
-  if (req.body.department !== "IT" && req.body.department !== "Other") {
+  if (req.body.department !== 'IT' && req.body.department !== 'Other') {
     verified = false;
-    msg = "Please enter one of the following: IT, Other";
+    msg = 'Please enter one of the following: IT, Other';
   }
 
   if (
-    req.body.program !== "Diploma (2 Years)" &&
-    req.body.program !== "Post-Diploma (1 Year)" &&
-    req.body.program !== "Certificate (3 Months)" &&
-    req.body.program !== "Certificate (6 Months)" &&
-    req.body.program !== "Upgrade" &&
-    req.body.program !== "Other"
+    req.body.program !== 'Diploma (2 Years)' &&
+    req.body.program !== 'Post-Diploma (1 Year)' &&
+    req.body.program !== 'Certificate (3 Months)' &&
+    req.body.program !== 'Certificate (6 Months)' &&
+    req.body.program !== 'Upgrade' &&
+    req.body.program !== 'Other'
   ) {
     verified = false;
     msg =
-      "Please enter one of the following: Diploma (2 Years), Post-Diploma (1 Year), Certificate (3 Months), Certificate (6 Months), Upgrade, Other";
+      'Please enter one of the following: Diploma (2 Years), Post-Diploma (1 Year), Certificate (3 Months), Certificate (6 Months), Upgrade, Other';
   }
 
   if (
-    objData.Students.some((student) => student.username.toLowerCase() === req.body.username.toLowerCase())
+    objData.Students.some(
+      student =>
+        student.username.toLowerCase() === req.body.username.toLowerCase()
+    )
   ) {
     verified = false;
-    msg = "Username is already in use.";
+    msg = 'Username is already in use.';
   }
 
   if (!verified) {
@@ -287,12 +364,12 @@ app.post("/newstudent", (req, res) => { // WILL NEED TO BE UPDATED BASED ON PEDR
 
     objData.Students.push(newStudent);
     let data = JSON.stringify(objData, null, 2);
-    fs.writeFile("database/data.json", data, complete);
+    fs.writeFile('database/data.json', data, complete);
     function complete() {
-      console.log("New Student Added:\n" + newStudent);
+      console.log('New Student Added:\n' + newStudent);
     }
 
-    res.send({success: true, code: 200});
+    res.send({ success: true, code: 200 });
   }
 
   function GenerateNewStudentID() {
@@ -304,12 +381,12 @@ app.post("/newstudent", (req, res) => { // WILL NEED TO BE UPDATED BASED ON PEDR
       tempID = Math.floor(Math.random() * 999999); //Generate random number between 000000 - 999999
 
       isUnique = true; // Set it to true to exit loop
-      if (objData.Students.find((student) => student.studentID === tempID)) {
+      if (objData.Students.find(student => student.studentID === tempID)) {
         isUnique = false; // If found set back to false to run the loop again
       }
     }
 
-    console.log("Succesfully generated a new unique id: " + tempID);
+    console.log('Succesfully generated a new unique id: ' + tempID);
     return tempID;
   }
 });
