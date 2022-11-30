@@ -211,13 +211,74 @@ app.post('/api/courses', (req, res) => {
     courseDescription: req.body.courseDescription,
   };
 
-  courseData.courses.push(newCourse);
-  res.send(newCourse);
+  let verified = true;
+  let msg = 'Something went wrong.';
 
-  let data = JSON.stringify(courseData, null, 2);
-  fs.writeFile('database/courseData.json', data, completed);
-  function completed() {
-    console.log('New course has been added to database/courseData.json');
+  if (
+    !req.body.courseCode ||
+    !req.body.courseName ||
+    !req.body.courseTerm ||
+    !req.body.courseStartDate ||
+    !req.body.courseEndDate ||
+    !req.body.courseFees ||
+    !req.body.courseDescription
+  ) {
+    verified = false;
+    msg = 'Missing information, please fill out all fields.';
+  }
+
+  if (req.body.courseCode.length > 6) {
+    verified = false;
+    msg =
+      '"Course Code" has to be at least 1 and no more than 6 characters long.';
+  }
+
+  if (req.body.courseName.length > 50) {
+    verified = false;
+    msg =
+      '"Course Name" has to be at least 1 and no more than 50 characters long.';
+  }
+
+  if (req.body.courseTerm < 1 || req.body.courseTerm > 4) {
+    verified = false;
+    msg = '"Course Term" has to be a number between 1 to 4.';
+  }
+
+  if (req.body.courseStartDate.match(/^\d{4}-\d{2}-\d{2}$/) === null) {
+    verified = false;
+    msg = '"Course Start Date" has to be in the proper format yyyy-mm-dd.';
+  }
+
+  if (
+    req.body.courseEndDate.match(/^\d{4}-\d{2}-\d{2}$/) === null ||
+    req.body.courseEndDate < req.body.courseStartDate
+  ) {
+    verified = false;
+    msg =
+      '"Course End Date" has to be in the proper format yyyy-mm-dd and has to be after the Course Start Date.';
+  }
+
+  if (req.body.courseFees > 1000000) {
+    verified = false;
+    msg = '"Course Fee" cannot be more than 1000000.';
+  }
+
+  if (req.body.courseDescription.length > 300) {
+    verified = false;
+    msg = '"Course Description" has a maximum length of 300 characters.';
+  }
+
+  if (verified) {
+    courseData.courses.push(newCourse);
+    res.send(newCourse);
+
+    let data = JSON.stringify(courseData, null, 2);
+    fs.writeFile('database/courseData.json', data, completed);
+    function completed() {
+      console.log('New course has been added to database/courseData.json');
+    }
+  } else {
+    res.send(msg);
   }
 });
 

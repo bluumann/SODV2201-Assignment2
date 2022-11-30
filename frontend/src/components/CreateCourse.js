@@ -77,6 +77,7 @@ const CreateCourse = props => {
             value={enteredCode}
             placeholder="Course Code"
             required
+            maxLength="6"
             className="input-box"
             onChange={codeChangeHandler}
           ></input>
@@ -89,6 +90,7 @@ const CreateCourse = props => {
             value={enteredName}
             placeholder="Course Name"
             required
+            maxLength="50"
             className="input-box"
             onChange={nameChangeHandler}
           ></input>
@@ -114,6 +116,7 @@ const CreateCourse = props => {
             type="date"
             value={enteredStartDate}
             required
+            max="2100-01-01"
             className="input-box"
             onChange={startDateChangeHandler}
           ></input>
@@ -125,6 +128,7 @@ const CreateCourse = props => {
             type="date"
             value={enteredEndDate}
             required
+            max="2100-01-01"
             className="input-box"
             onChange={endDateChangeHandler}
           ></input>
@@ -136,6 +140,7 @@ const CreateCourse = props => {
             type="number"
             value={enteredFees}
             required
+            max="1000000"
             className="input-box"
             onChange={feesChangeHandler}
           ></input>
@@ -146,6 +151,7 @@ const CreateCourse = props => {
           <textarea
             value={enteredDescription}
             required
+            maxLength="300"
             onChange={descriptionChangeHandler}
           />
         </label>
