@@ -1,34 +1,41 @@
 const express = require('express');
 const app = express();
-app.use(express.json());
+const fs = require('fs');
+const cors = require('cors');
 const port = 5000;
 
-// Import courses array from data.js
-const { courses } = require('../backend/database/data.js');
+app.use(express.json());
+app.use(cors());
 
-// API: default route
-app.get('/', (req, res) => {
-  res.send('BVC Course Registration Backend');
-});
+// PETER
+// Loading courses from database/courseData.json
+if (fs.existsSync('database/courseData.json')) {
+  let data = fs.readFileSync('database/courseData.json', 'utf8');
+  courseData = JSON.parse(data);
+} else {
+  console.log(
+    'Could not load courses from database/courses.json - Check if file exists.'
+  );
+}
 
-// API: retrieve all courses
+// PETER
+// API (GET): retrieve all courses
 app.get('/api/courses', (req, res) => {
-  res.send(courses);
+  if (fs.existsSync('database/courseData.json')) {
+    let data = fs.readFileSync('database/courseData.json', 'utf8');
+    courseData = JSON.parse(data);
+  } else {
+    console.log(
+      'Could not load courses from database/courses.json - Check if file exists.'
+    );
+  }
+  res.send(courseData);
 });
 
-// API: retrieve a course by id
-app.get('/api/courses/:courseCode', (req, res) => {
-  const course = courses.find(c => c.courseCode === req.params.courseCode);
-  if (!course)
-    return res
-      .status(404)
-      .send('The course with the given "course code" was not found.');
-  res.send(course);
-});
-
-// API: create new course
+// PETER
+// API (POST): create new course
 app.post('/api/courses', (req, res) => {
-  const course = {
+  let newCourse = {
     courseCode: req.body.courseCode,
     courseName: req.body.courseName,
     courseTerm: req.body.courseTerm,
@@ -37,21 +44,38 @@ app.post('/api/courses', (req, res) => {
     courseFees: req.body.courseFees,
     courseDescription: req.body.courseDescription,
   };
-  courses.push(course);
-  res.send(course);
+
+  courseData.courses.push(newCourse);
+  res.send(newCourse);
+
+  let data = JSON.stringify(courseData, null, 2);
+  fs.writeFile('database/courseData.json', data, completed);
+  function completed() {
+    console.log('New course has been added to database/courseData.json');
+  }
 });
 
-// API: delete a course
+// PETER
+// API (DELETE): delete a course
 app.delete('/api/courses/:courseCode', (req, res) => {
-  const course = courses.find(c => c.courseCode === req.params.courseCode);
+  const course = courseData.courses.find(
+    c => c.courseCode === req.params.courseCode
+  );
   if (!course)
     return res
       .status(404)
       .send('The course with the given "course code" was not found.');
 
-  const index = courses.indexOf(course);
-  courses.splice(index, 1);
+  const index = courseData.courses.indexOf(course);
+  courseData.courses.splice(index, 1);
 
+  let data = JSON.stringify(courseData, null, 2);
+  fs.writeFile('database/courseData.json', data, completed);
+  function completed() {
+    console.log(
+      'The selected course has been deleted from database/courseData.json'
+    );
+  }
   res.send(course);
 });
 

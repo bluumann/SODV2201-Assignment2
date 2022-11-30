@@ -1,25 +1,31 @@
-import React from "react";
-import { useState } from "react";
+import React from 'react';
+import { useState } from 'react';
 
-const DisplayArray = (props) => {
-  const [searchValue, setSearchValue] = useState("");
-  const searchGo = (event) => {
+const DisplayArray = props => {
+  const [searchValue, setSearchValue] = useState('');
+  const [displayArray, setDisplayArray] = useState(null);
+  const searchGo = event => {
     setSearchValue(event.target.value);
   };
 
   var arr = props.courseCode;
 
-  //const resultArr = [...arr].sort((x,y) => x.courseName < y.courseName ? -1 : 1,) (for ordering it)
+  // PETER
+  // useEffect(() => {
+  //   axios.get('http://localhost:5000/api/courses').then(response => {
+  //     setDisplayArray(response.data.courses);
+  //   });
+  // }, []);
 
-  const resultArr = [...arr].filter((course) =>
+  const resultArr = [...arr].filter(course =>
     (course.courseName + course.courseCode)
       .toLowerCase()
       .includes(searchValue.toLowerCase())
   );
 
-  const showCourseDescription = (event) => {
+  const showCourseDescription = event => {
     event.preventDefault();
-    alert(event.target.value)
+    alert(event.target.value);
   };
 
   return (
@@ -49,7 +55,7 @@ const DisplayArray = (props) => {
                       .localeCompare(course2.courseTerm.toString()) ||
                     course1.courseCode > course2.courseCode
                 )
-                .map((courses) => (
+                .map(courses => (
                   <tr key={courses.courseCode}>
                     <td>{courses.courseCode}</td>
                     <td>{courses.courseName}</td>
@@ -59,7 +65,7 @@ const DisplayArray = (props) => {
                     <td>{courses.courseFees}</td>
                     <td>
                       <button
-                        style={{ fontSize: "1rem" }}
+                        style={{ fontSize: '1rem' }}
                         value={courses.courseDescription}
                         onClick={showCourseDescription}
                       >
