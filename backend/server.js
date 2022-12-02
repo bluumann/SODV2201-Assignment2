@@ -1,10 +1,10 @@
-const _ = require('underscore');
-const cors = require('cors');
-const express = require('express');
-const fs = require('fs');
+const _ = require("underscore");
+const cors = require("cors");
+const express = require("express");
+const fs = require("fs");
 
-const path = require('path');
-const bodyParser = require('body-parser');
+const path = require("path");
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = 5000;
@@ -12,7 +12,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const messageDataURL = './database/storedMessages.json';
+const messageDataURL = "./database/storedMessages.json";
 
 /**** WAS MADE FOR TESTING ON MY END CAN IGNORE (COLIN) CAN BE DELETED AT LATER DATE *****/
 // let objData;
@@ -186,81 +186,81 @@ var courseStore;
 var messageStore;
 
 //Looking for existing User file.
-if (fs.existsSync(path.join(__dirname, 'database', 'storedUsers.json'))) {
+if (fs.existsSync(path.join(__dirname, "database", "storedUsers.json"))) {
   userStore = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'database', 'storedUsers.json'))
+    fs.readFileSync(path.join(__dirname, "database", "storedUsers.json"))
   );
-  console.log('Loaded file from storedUsers.json');
+  console.log("Loaded file from storedUsers.json");
 } else {
   userStore = { Users: [] };
   fs.writeFile(
-    path.join(__dirname, 'database', 'storedUsers.json'),
+    path.join(__dirname, "database", "storedUsers.json"),
     JSON.stringify(userStore, null, 2),
     fileCreated
   );
   function fileCreated() {
-    console.log('Created file storedUsers.json');
+    console.log("Created file storedUsers.json");
   }
 }
 
 //Looking for existing Course file.
-if (fs.existsSync(path.join(__dirname, 'database', 'storedCourses.json'))) {
+if (fs.existsSync(path.join(__dirname, "database", "storedCourses.json"))) {
   courseStore = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'database', 'storedCourses.json'))
+    fs.readFileSync(path.join(__dirname, "database", "storedCourses.json"))
   );
-  console.log('Loaded file from storedCourses.json');
+  console.log("Loaded file from storedCourses.json");
 } else {
   courseStore = { Courses: [] };
   fs.writeFile(
-    path.join(__dirname, 'database', 'storedCourses.json'),
+    path.join(__dirname, "database", "storedCourses.json"),
     JSON.stringify(courseStore, null, 2),
     fileCreated
   );
   function fileCreated() {
-    console.log('Created file storedCourses.json');
+    console.log("Created file storedCourses.json");
   }
 }
 
 //Looking for existing question file.
-if (fs.existsSync(path.join(__dirname, 'database', 'storedMessages.json'))) {
+if (fs.existsSync(path.join(__dirname, "database", "storedMessages.json"))) {
   messageStore = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'database', 'storedMessages.json'))
+    fs.readFileSync(path.join(__dirname, "database", "storedMessages.json"))
   );
-  console.log('Loaded file from storedMessages.json');
+  console.log("Loaded file from storedMessages.json");
 } else {
   messageStore = { Messages: [] };
   fs.writeFile(
-    path.join(__dirname, 'database', 'storedMessages.json'),
+    path.join(__dirname, "database", "storedMessages.json"),
     JSON.stringify(messageStore, null, 2),
     fileCreated
   );
   function fileCreated() {
-    console.log('Created file storedMessages.json');
+    console.log("Created file storedMessages.json");
   }
 }
 
 //APIs for recovering Data.
-app.get('/userData', function (req, res) {
-  res.sendFile(__dirname + '/database/storedUsers.json');
+app.get("/userData", function (req, res) {
+  res.sendFile(__dirname + "/database/storedUsers.json");
 });
 
-app.get('/courseData', function (req, res) {
-  res.sendFile(__dirname + '/database/storedCourses.json');
+app.get("/courseData", function (req, res) {
+  res.sendFile(__dirname + "/database/storedCourses.json");
 });
 
-app.get('/courseData', function (req, res) {
-  res.sendFile(__dirname + '/database/storedMessages.json');
+app.get("/courseData", function (req, res) {
+  res.sendFile(__dirname + "/database/storedMessages.json");
 });
 
 // PETER
 // API (GET): retrieve all courses
-app.get('/api/courses', (req, res) => {
-  if (fs.existsSync('database/courseData.json')) {
-    let data = fs.readFileSync('database/courseData.json', 'utf8');
+app.get("/api/courses", (req, res) => {
+  if (fs.existsSync("database/courseData.json")) {
+    let data = fs.readFileSync("database/courseData.json", "utf8");
     courseData = JSON.parse(data);
   } else {
     console.log(
-      'Could not load courses from database/courses.json - Check if file exists.'
+      "Could not load courses from database/courses.json - Check if file exists."
     );
   }
   res.send(courseData);
@@ -268,7 +268,7 @@ app.get('/api/courses', (req, res) => {
 
 // PETER
 // API (POST): create new course
-app.post('/api/courses', (req, res) => {
+app.post("/api/courses", (req, res) => {
   let newCourse = {
     courseCode: req.body.courseCode,
     courseName: req.body.courseName,
@@ -280,7 +280,7 @@ app.post('/api/courses', (req, res) => {
   };
 
   let verified = true;
-  let msg = 'Something went wrong.';
+  let msg = "Something went wrong.";
 
   if (
     !req.body.courseCode ||
@@ -292,7 +292,7 @@ app.post('/api/courses', (req, res) => {
     !req.body.courseDescription
   ) {
     verified = false;
-    msg = 'Missing information, please fill out all fields.';
+    msg = "Missing information, please fill out all fields.";
   }
 
   if (req.body.courseCode.length > 6) {
@@ -341,9 +341,9 @@ app.post('/api/courses', (req, res) => {
     res.send(newCourse);
 
     let data = JSON.stringify(courseData, null, 2);
-    fs.writeFile('database/courseData.json', data, completed);
+    fs.writeFile("database/courseData.json", data, completed);
     function completed() {
-      console.log('New course has been added to database/courseData.json');
+      console.log("New course has been added to database/courseData.json");
     }
   } else {
     res.send(msg);
@@ -352,9 +352,9 @@ app.post('/api/courses', (req, res) => {
 
 // PETER
 // API (DELETE): delete a course
-app.delete('/api/courses/:courseCode', (req, res) => {
+app.delete("/api/courses/:courseCode", (req, res) => {
   const course = courseData.courses.find(
-    c => c.courseCode === req.params.courseCode
+    (c) => c.courseCode === req.params.courseCode
   );
   if (!course)
     return res
@@ -365,32 +365,32 @@ app.delete('/api/courses/:courseCode', (req, res) => {
   courseData.courses.splice(index, 1);
 
   let data = JSON.stringify(courseData, null, 2);
-  fs.writeFile('database/courseData.json', data, completed);
+  fs.writeFile("database/courseData.json", data, completed);
   function completed() {
     console.log(
-      'The selected course has been deleted from database/courseData.json'
+      "The selected course has been deleted from database/courseData.json"
     );
   }
   res.send(course);
 });
 
-app.get('/', (req, res) => {
-  res.send('BVC Course Registration Backend');
+app.get("/", (req, res) => {
+  res.send("BVC Course Registration Backend");
 });
 
 /***** COLIN *****/
 // For getting student info
-app.get('/studentlist', (req, res) => {
-  res.send(objData.Students); // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
+app.get("/studentlist", (req, res) => {
+  res.send(userStore.Users); // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
 });
 
 // For adding students
-app.post('/newstudent', (req, res) => {
+app.post("/newstudent", (req, res) => {
   // WILL NEED TO BE UPDATED BASED ON PEDRO'S WORK
   const newStudentID = GenerateNewStudentID();
 
   let verified = true;
-  let msg = 'Something went wrong.';
+  let msg = "Something went wrong.";
 
   if (
     !req.body.firstName ||
@@ -404,16 +404,16 @@ app.post('/newstudent', (req, res) => {
     !req.body.password
   ) {
     verified = false;
-    msg = 'Missing information, please fill out all fields.';
+    msg = "Missing information, please fill out all fields.";
   }
 
   if (
-    objData.Students.some(
-      student => student.email.toLowerCase() === req.body.email.toLowerCase()
+    userStore.Users.some(
+      (student) => student.email.toLowerCase() === req.body.email.toLowerCase()
     )
   ) {
     verified = false;
-    msg = 'Email is already in use.';
+    msg = "Email is already in use.";
   }
 
   if (
@@ -422,54 +422,54 @@ app.post('/newstudent', (req, res) => {
     ) === null
   ) {
     verified = false;
-    msg = 'Please submit a proper email address.';
+    msg = "Please submit a proper email address.";
   }
 
   if (
     req.body.phone.match(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/) === null
   ) {
     verified = false;
-    msg = 'Please enter a phone number with the following format: 123-456-7890';
+    msg = "Please enter a phone number with the following format: 123-456-7890";
   }
 
   let dateOfBirth = new Date(req.body.dateOfBirth).getTime();
 
   if (
     req.body.dateOfBirth.match(/^\d{4}-\d{2}-\d{2}$/) === null ||
-    typeof dateOfBirth !== 'number' ||
+    typeof dateOfBirth !== "number" ||
     Number.isNaN(dateOfBirth) ||
     dateOfBirth > new Date().getTime()
   ) {
     verified = false;
-    msg = 'Please enter an appropriate date in the format: yyyy-mm-dd';
+    msg = "Please enter an appropriate date in the format: yyyy-mm-dd";
   }
 
-  if (req.body.department !== 'IT' && req.body.department !== 'Other') {
+  if (req.body.department !== "IT" && req.body.department !== "Other") {
     verified = false;
-    msg = 'Please enter one of the following: IT, Other';
+    msg = "Please enter one of the following: IT, Other";
   }
 
   if (
-    req.body.program !== 'Diploma (2 Years)' &&
-    req.body.program !== 'Post-Diploma (1 Year)' &&
-    req.body.program !== 'Certificate (3 Months)' &&
-    req.body.program !== 'Certificate (6 Months)' &&
-    req.body.program !== 'Upgrade' &&
-    req.body.program !== 'Other'
+    req.body.program !== "Diploma (2 Years)" &&
+    req.body.program !== "Post-Diploma (1 Year)" &&
+    req.body.program !== "Certificate (3 Months)" &&
+    req.body.program !== "Certificate (6 Months)" &&
+    req.body.program !== "Upgrade" &&
+    req.body.program !== "Other"
   ) {
     verified = false;
     msg =
-      'Please enter one of the following: Diploma (2 Years), Post-Diploma (1 Year), Certificate (3 Months), Certificate (6 Months), Upgrade, Other';
+      "Please enter one of the following: Diploma (2 Years), Post-Diploma (1 Year), Certificate (3 Months), Certificate (6 Months), Upgrade, Other";
   }
 
   if (
-    objData.Students.some(
-      student =>
+    userStore.Users.some(
+      (student) =>
         student.username.toLowerCase() === req.body.username.toLowerCase()
     )
   ) {
     verified = false;
-    msg = 'Username is already in use.';
+    msg = "Username is already in use.";
   }
 
   if (!verified) {
@@ -491,11 +491,15 @@ app.post('/newstudent', (req, res) => {
       registeredCourses: [],
     };
 
-    objData.Students.push(newStudent);
-    let data = JSON.stringify(objData, null, 2);
-    fs.writeFile('database/data.json', data, complete);
+    userStore.Users.push(newStudent);
+    let data = JSON.stringify(userStore, null, 2);
+    fs.writeFile(
+      path.join(__dirname, "database", "storedUsers.json"),
+      data,
+      complete
+    );
     function complete() {
-      console.log('New Student Added:\n' + newStudent);
+      console.log("New Student Added:\n" + newStudent);
     }
 
     res.send({ success: true, code: 200 });
@@ -510,12 +514,12 @@ app.post('/newstudent', (req, res) => {
       tempID = Math.floor(Math.random() * 999999); //Generate random number between 000000 - 999999
 
       isUnique = true; // Set it to true to exit loop
-      if (objData.Students.find(student => student.studentID === tempID)) {
+      if (userStore.Users.find((student) => student.studentID === tempID)) {
         isUnique = false; // If found set back to false to run the loop again
       }
     }
 
-    console.log('Succesfully generated a new unique id: ' + tempID);
+    console.log("Succesfully generated a new unique id: " + tempID);
     return tempID;
   }
 });
@@ -524,18 +528,18 @@ app.post('/newstudent', (req, res) => {
 // Checking for file
 var exists = fs.existsSync(messageDataURL);
 if (exists) {
-  var data = fs.readFileSync(messageDataURL, 'utf-8');
+  var data = fs.readFileSync(messageDataURL, "utf-8");
   obj = JSON.parse(data);
 } else {
   // Create the data object if the file does not exist
-  console.log('Creating data object');
+  console.log("Creating data object");
   var obj = { messages: [] };
 }
 
 // Gemma
 // API to submit new message/question
-app.post('/newmessage', (req, res) => {
-  let reply = 'Success';
+app.post("/newmessage", (req, res) => {
+  let reply = "Success";
   let check = true;
 
   if (
@@ -545,7 +549,7 @@ app.post('/newmessage', (req, res) => {
     !req.body.message
   ) {
     check = false;
-    reply = 'Please fill out all fields.';
+    reply = "Please fill out all fields.";
   }
 
   if (!check) {
@@ -568,11 +572,11 @@ app.post('/newmessage', (req, res) => {
     let data = JSON.stringify(obj, null, 2);
 
     // Write the JSON string to file
-    fs.writeFile(messageDataURL, data, err => {
+    fs.writeFile(messageDataURL, data, (err) => {
       if (err) {
         console.log(err);
       } else {
-        console.log('Data successfully written to file.\n');
+        console.log("Data successfully written to file.\n");
       }
     });
     res.send(contactRequest);
@@ -581,9 +585,9 @@ app.post('/newmessage', (req, res) => {
 
 // Gemma
 // API to retrieve all messages
-app.get('/questions', (req, res) => {
+app.get("/questions", (req, res) => {
   if (obj.messages == []) {
-    res.send('There are no messages.');
+    res.send("There are no messages.");
   }
   res.send(obj.messages);
 });

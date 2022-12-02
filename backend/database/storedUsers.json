@@ -1,59 +1,17 @@
 {
   "Users": [
-	{
-		"firstName": "Nayda",
-		"lastName": "Sharon",
-		"email": "in@outlook.com",
-		"phone": "1-252-534-6254",
-		"dateOfBirth": "04-9-2023",
-		"program": "tincidunt",
-		"studentID": "9193",
-		"username": "Barron",
-		"password": "abc"
-	},
-	{
-		"firstName": "Myles",
-		"lastName": "Cameron",
-		"email": "eu.dolor@yahoo.edu",
-		"phone": "1-532-266-7218",
-		"dateOfBirth": "03-20-2022",
-		"program": "nisl",
-		"studentID": "18462",
-		"username": "Flowers",
-		"password": "abc"
-	},
-	{
-		"firstName": "Arthur",
-		"lastName": "Laith",
-		"email": "donec.non@outlook.com",
-		"phone": "(437) 418-5252",
-		"dateOfBirth": "08-29-2023",
-		"program": "Etiam",
-		"studentID": "59060",
-		"username": "Valencia",
-		"password": "abc"
-	},
-	{
-		"firstName": "Lucas",
-		"lastName": "Peter",
-		"email": "ridiculus.mus.donec@icloud.net",
-		"phone": "1-734-525-7526",
-		"dateOfBirth": "01-19-2022",
-		"program": "tincidunt",
-		"studentID": "68994",
-		"username": "Morgan",
-		"password": "abc"
-	},
-	{
-		"firstName": "Garrison",
-		"lastName": "Buffy",
-		"email": "pellentesque.tellus.sem@protonmail.edu",
-		"phone": "1-309-313-1159",
-		"dateOfBirth": "04-4-2022",
-		"program": "Vestibulum",
-		"studentID": "588167",
-		"username": "Vaughan",
-		"password": "abc"
-	}
-]
+    {
+      "firstName": "test",
+      "lastName": "test",
+      "email": "test@test",
+      "phone": "123-456-7890",
+      "dateOfBirth": "2010-01-15",
+      "department": "IT",
+      "program": "Diploma (2 Years)",
+      "studentID": 808504,
+      "username": "test",
+      "password": "test",
+      "registeredCourses": []
+    }
+  ]
 }
