@@ -2,7 +2,11 @@ const _ = require('underscore');
 const cors = require('cors');
 const express = require('express');
 const fs = require('fs');
-
+const passport = require('passport');
+const passportLocal = require('passport-local').Strategy;
+const expressSession = require('express-session');
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
 
@@ -13,169 +17,186 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const messageDataURL = './database/storedMessages.json';
+const user = require('./user');
 
-/**** WAS MADE FOR TESTING ON MY END CAN IGNORE (COLIN) CAN BE DELETED AT LATER DATE *****/
-// let objData;
-//
-// if (fs.existsSync("database/data.json")) {
-//   console.log('Loading data from "database/data.json"');
-//   let data = fs.readFileSync("database/data.json", "utf8");
-//   objData = JSON.parse(data);
-// } else {
-//   console.log('Created variable "obj" to hold data');
-//   objData = {
-//     Admins: [],
-//     Courses: [
-//       {
-//         courseCode: "PM111",
-//         courseName: "Intro to Project Management",
-//         courseTerm: 1,
-//         courseStartDate: "2022-09-06",
-//         courseEndDate: "2022-12-16",
-//         courseFees: "676.67",
-//         courseDescription:
-//           "This is a course where we will introduce you to basic Project Management concepts.",
-//       },
-//       {
-//         courseCode: "PF111",
-//         courseName: "C++ Programming Fundamentals",
-//         courseTerm: 1,
-//         courseStartDate: "2022-09-06",
-//         courseEndDate: "2022-12-16",
-//         courseFees: "785.15",
-//         courseDescription:
-//           "This is a course where we will introduce you to basic C++ Programming fundamentals.",
-//       },
-//       {
-//         courseCode: "CM111",
-//         courseName: "Computer Maintenance",
-//         courseTerm: 1,
-//         courseStartDate: "2022-09-06",
-//         courseEndDate: "2022-12-16",
-//         courseFees: "457.49",
-//         courseDescription:
-//           "In this course you will learn about the basics of computer maintenance.",
-//       },
-//       {
-//         courseCode: "IS111",
-//         courseName: "Information Security",
-//         courseTerm: 1,
-//         courseStartDate: "2022-09-06",
-//         courseEndDate: "2022-12-16",
-//         courseFees: "647.77",
-//         courseDescription:
-//           "In this course you will learn about the basics of Information Security.",
-//       },
-//       {
-//         courseCode: "NET222",
-//         courseName: "Networking",
-//         courseTerm: 2,
-//         courseStartDate: "2023-01-09",
-//         courseEndDate: "2023-04-21",
-//         courseFees: "533.66",
-//         courseDescription:
-//           "In this course you will be introduced to the basics of networking and how to setup a home network.",
-//       },
-//       {
-//         courseCode: "WEB222",
-//         courseName: "Web Technology",
-//         courseTerm: 2,
-//         courseStartDate: "2023-01-09",
-//         courseEndDate: "2023-04-21",
-//         courseFees: "874.95",
-//         courseDescription:
-//           "In this course you will learn about the basics of web design and programming.",
-//       },
-//       {
-//         courseCode: "PM222",
-//         courseName: "Project Management",
-//         courseTerm: 2,
-//         courseStartDate: "2023-01-09",
-//         courseEndDate: "2023-04-21",
-//         courseFees: "788.87",
-//         courseDescription:
-//           "In this course you will dive deeper into the many aspects of project management.",
-//       },
-//       {
-//         courseCode: "PM333",
-//         courseName: "Intermediate Project Management",
-//         courseTerm: 3,
-//         courseStartDate: "2023-10-04",
-//         courseEndDate: "2023-12-15",
-//         courseFees: "877.78",
-//         courseDescription:
-//           "In this course you will study more specific aspects about project management specifically pertaining to software development.",
-//       },
-//       {
-//         courseCode: "PF333",
-//         courseName: "Advanced C++ Programming Fundamentals",
-//         courseTerm: 3,
-//         courseStartDate: "2023-10-04",
-//         courseEndDate: "2023-12-15",
-//         courseFees: "966.96",
-//         courseDescription:
-//           "In this course you will learn more advanced and in-depth features within the C++ programming language.",
-//       },
-//       {
-//         courseCode: "CM333",
-//         courseName: "Advanced Computer Maintenance",
-//         courseTerm: 3,
-//         courseStartDate: "2023-10-04",
-//         courseEndDate: "2023-12-15",
-//         courseFees: "579.89",
-//         courseDescription:
-//           "This course will go into more specific elements about computer maintenance.",
-//       },
-//       {
-//         courseCode: "IS333",
-//         courseName: "Advanced Information Security",
-//         courseTerm: 3,
-//         courseStartDate: "2023-10-04",
-//         courseEndDate: "2023-12-15",
-//         courseFees: "745.54",
-//         courseDescription:
-//           "In this course you will go into more specific detail pertaining to aspects of information security.",
-//       },
-//       {
-//         courseCode: "NET444",
-//         courseName: "Advanced Networking",
-//         courseTerm: 4,
-//         courseStartDate: "2024-01-08",
-//         courseEndDate: "2024-04-19",
-//         courseFees: "713.67",
-//         courseDescription:
-//           "In this course you will learn more advanced networking techniques and learn how to set up a mid-sized office network.",
-//       },
-//       {
-//         courseCode: "WEB444",
-//         courseName: "Advanced Web Technology",
-//         courseTerm: 4,
-//         courseStartDate: "2024-01-08",
-//         courseEndDate: "2024-04-19",
-//         courseFees: "634.50",
-//         courseDescription:
-//           "In this course you will learn how to create websites using react as well as back-end logic and setting up a server.",
-//       },
-//       {
-//         courseCode: "PR444",
-//         courseName: "Advanced Project Management",
-//         courseTerm: 4,
-//         courseStartDate: "2024-01-08",
-//         courseEndDate: "2024-04-19",
-//         courseFees: "533.24",
-//         courseDescription:
-//           "In this course you will learn advanced techniques about project management as well as create your own project idea.",
-//       },
-//     ],
-//     Students: [],
-//     Questions: [],
-//   };
-//   let data = JSON.stringify(objData, null, 2);
-//   fs.writeFile("database/data.json", data, complete);
-//   function complete() {
-//     console.log("File has been successfully created");
-//   }
-// }
+mongoose.connect(
+  'mongodb+srv://myUser:myPassword@cluster0.jmqkcax.mongodb.net/?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  () => {
+    console.log('connected to mongodb');
+  }
+);
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+// /**** WAS MADE FOR TESTING ON MY END CAN IGNORE (COLIN) CAN BE DELETED AT LATER DATE *****/
+let objData;
+
+if (fs.existsSync('database/data.json')) {
+  console.log('Loading data from "database/data.json"');
+  let data = fs.readFileSync('database/data.json', 'utf8');
+  objData = JSON.parse(data);
+} else {
+  console.log('Created variable "obj" to hold data');
+  objData = {
+    Admins: [],
+    Courses: [
+      {
+        courseCode: 'PM111',
+        courseName: 'Intro to Project Management',
+        courseTerm: 1,
+        courseStartDate: '2022-09-06',
+        courseEndDate: '2022-12-16',
+        courseFees: '676.67',
+        courseDescription:
+          'This is a course where we will introduce you to basic Project Management concepts.',
+      },
+      {
+        courseCode: 'PF111',
+        courseName: 'C++ Programming Fundamentals',
+        courseTerm: 1,
+        courseStartDate: '2022-09-06',
+        courseEndDate: '2022-12-16',
+        courseFees: '785.15',
+        courseDescription:
+          'This is a course where we will introduce you to basic C++ Programming fundamentals.',
+      },
+      {
+        courseCode: 'CM111',
+        courseName: 'Computer Maintenance',
+        courseTerm: 1,
+        courseStartDate: '2022-09-06',
+        courseEndDate: '2022-12-16',
+        courseFees: '457.49',
+        courseDescription:
+          'In this course you will learn about the basics of computer maintenance.',
+      },
+      {
+        courseCode: 'IS111',
+        courseName: 'Information Security',
+        courseTerm: 1,
+        courseStartDate: '2022-09-06',
+        courseEndDate: '2022-12-16',
+        courseFees: '647.77',
+        courseDescription:
+          'In this course you will learn about the basics of Information Security.',
+      },
+      {
+        courseCode: 'NET222',
+        courseName: 'Networking',
+        courseTerm: 2,
+        courseStartDate: '2023-01-09',
+        courseEndDate: '2023-04-21',
+        courseFees: '533.66',
+        courseDescription:
+          'In this course you will be introduced to the basics of networking and how to setup a home network.',
+      },
+      {
+        courseCode: 'WEB222',
+        courseName: 'Web Technology',
+        courseTerm: 2,
+        courseStartDate: '2023-01-09',
+        courseEndDate: '2023-04-21',
+        courseFees: '874.95',
+        courseDescription:
+          'In this course you will learn about the basics of web design and programming.',
+      },
+      {
+        courseCode: 'PM222',
+        courseName: 'Project Management',
+        courseTerm: 2,
+        courseStartDate: '2023-01-09',
+        courseEndDate: '2023-04-21',
+        courseFees: '788.87',
+        courseDescription:
+          'In this course you will dive deeper into the many aspects of project management.',
+      },
+      {
+        courseCode: 'PM333',
+        courseName: 'Intermediate Project Management',
+        courseTerm: 3,
+        courseStartDate: '2023-10-04',
+        courseEndDate: '2023-12-15',
+        courseFees: '877.78',
+        courseDescription:
+          'In this course you will study more specific aspects about project management specifically pertaining to software development.',
+      },
+      {
+        courseCode: 'PF333',
+        courseName: 'Advanced C++ Programming Fundamentals',
+        courseTerm: 3,
+        courseStartDate: '2023-10-04',
+        courseEndDate: '2023-12-15',
+        courseFees: '966.96',
+        courseDescription:
+          'In this course you will learn more advanced and in-depth features within the C++ programming language.',
+      },
+      {
+        courseCode: 'CM333',
+        courseName: 'Advanced Computer Maintenance',
+        courseTerm: 3,
+        courseStartDate: '2023-10-04',
+        courseEndDate: '2023-12-15',
+        courseFees: '579.89',
+        courseDescription:
+          'This course will go into more specific elements about computer maintenance.',
+      },
+      {
+        courseCode: 'IS333',
+        courseName: 'Advanced Information Security',
+        courseTerm: 3,
+        courseStartDate: '2023-10-04',
+        courseEndDate: '2023-12-15',
+        courseFees: '745.54',
+        courseDescription:
+          'In this course you will go into more specific detail pertaining to aspects of information security.',
+      },
+      {
+        courseCode: 'NET444',
+        courseName: 'Advanced Networking',
+        courseTerm: 4,
+        courseStartDate: '2024-01-08',
+        courseEndDate: '2024-04-19',
+        courseFees: '713.67',
+        courseDescription:
+          'In this course you will learn more advanced networking techniques and learn how to set up a mid-sized office network.',
+      },
+      {
+        courseCode: 'WEB444',
+        courseName: 'Advanced Web Technology',
+        courseTerm: 4,
+        courseStartDate: '2024-01-08',
+        courseEndDate: '2024-04-19',
+        courseFees: '634.50',
+        courseDescription:
+          'In this course you will learn how to create websites using react as well as back-end logic and setting up a server.',
+      },
+      {
+        courseCode: 'PR444',
+        courseName: 'Advanced Project Management',
+        courseTerm: 4,
+        courseStartDate: '2024-01-08',
+        courseEndDate: '2024-04-19',
+        courseFees: '533.24',
+        courseDescription:
+          'In this course you will learn advanced techniques about project management as well as create your own project idea.',
+      },
+    ],
+    Students: [],
+    Questions: [],
+  };
+  let data = JSON.stringify(objData, null, 2);
+  fs.writeFile('database/data.json', data, complete);
+  function complete() {
+    console.log('File has been successfully created');
+  }
+}
 
 // PETER
 // Loading courses from database/courseData.json
@@ -524,6 +545,79 @@ app.post('/newstudent', (req, res) => {
   }
 });
 /***** END OF COLIN *****/
+
+/* **********Sasha  start*/
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
+  expressSession({
+    secret: 'mySecret',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./passportConfig')(passport);
+
+app.post('/handleLogin', (req, res, next) => {
+  console.log('hi');
+  passport.authenticate('local', (err, user, info) => {
+    if (err) throw err;
+    if (!user) {
+      res.send(false);
+    } else {
+      req.logIn(user, err => {
+        if (err) throw err;
+        res.send('auth success');
+      });
+    }
+  })(req, res, next);
+});
+
+app.post('/logout', function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+  });
+
+  console.log('logging out');
+});
+
+app.post('/handleRegister', (req, res) => {
+  user.findOne({ username: req.body.username }, async (err, doc) => {
+    if (err) throw err;
+    if (doc) res.send('user already exists');
+    if (!doc) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const newUser = new user({
+        username: req.body.username,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      res.send('User Created');
+    }
+  });
+});
+
+app.get('/getLoggedInUsername', (req, res) => {
+  res.send(req.user.username);
+});
+
+app.get('/CheckIsLoggedIn', (req, res) => {
+  if (res.user != null) {
+    console.log('logged in as: ' + res.user.username);
+    res.send(true);
+  } else {
+    console.log('Not Logged In!');
+    res.send(true);
+  }
+});
 
 // Checking for file
 var exists = fs.existsSync(messageDataURL);

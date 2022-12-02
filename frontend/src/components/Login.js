@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const Login = (props) => {
+const Login = props => {
   const navigate = useNavigate();
 
   const [btnStudentSelected, setBtnStudentSelected] = useState(false);
@@ -19,63 +20,53 @@ const Login = (props) => {
     setBtnStudentSelected(false);
     setBtnSelected(true);
   };
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const updateUsernameHandler = (event) => {
-    setUsername(event.target.value);
-  };
-  const updatePasswordHandler = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     let correctInfo = false;
+    axios({
+      method: 'POST',
+      data: {
+        username: loginUsername,
+        password: loginPassword,
+      },
+      withCredentials: true,
+      url: 'http://localhost:5000/handleLogin',
+    }).then(res => {
+      console.log(res.data);
 
-    if (btnStudentSelected) {
-      props.students.map((student) => {
-        if (username.toLowerCase() === student.username.toLowerCase() && password === student.password) {
-          props.updateUser({
-            username: student.username,
-            password: student.password,
-            type: "student",
-          });
-          console.log("Logging in as student");
-          //Send to student page
-          navigate("/student/search");
-          correctInfo = true;
+      correctInfo = res.data;
+      console.log(correctInfo);
+      if (res.data === true) {
+        correctInfo = true;
+      }
+
+      if (correctInfo) {
+        if (btnAdminSelected) {
+          console.log('logging admin');
+
+          navigate('/admin');
         }
-      });
-    }
-
-    if (btnAdminSelected) {
-      props.admins.map((admin) => {
-        if (username.toLowerCase() === admin.username.toLowerCase() && password === admin.password) {
-            props.updateUser({
-              username: admin.username,
-              password: admin.password,
-              type: "admin",
-            });
-          console.log("Logging in as admin");
-          //Send to admin page
-          navigate("/admin/search");
-          correctInfo = true;
+        if (btnStudentSelected) {
+          //navigate()
+          console.log('logging stud');
+          navigate('/student');
         }
-      });
-    }
-
-    if(!correctInfo) alert("Incorrect username/password, please try again")
+      } else {
+        alert('Invalid Login Information! please try again');
+      }
+    });
   };
 
   const displayedText = () => {
     if (!btnSelected) {
-      return "Please Choose Student / Admin";
+      return 'Please Choose Student / Admin';
     } else if (btnStudentSelected) {
-      return "Logging in as Student";
+      return 'Logging in as Student';
     } else if (btnAdminSelected) {
-      return "Logging in as Admin";
+      return 'Logging in as Admin';
     }
   };
 
@@ -85,45 +76,45 @@ const Login = (props) => {
         <button
           type="button"
           onClick={styleBtnStudent}
-          className={btnStudentSelected ? "selectedBtn" : "btn"}
+          className={btnStudentSelected ? 'selectedBtn' : 'btn'}
         >
           Student
         </button>
         <button
           type="button"
           onClick={styleBtnAdmin}
-          className={btnAdminSelected ? "selectedBtn" : "btn"}
+          className={btnAdminSelected ? 'selectedBtn' : 'btn'}
         >
           Admin
-        </button>{" "}
+        </button>{' '}
         <br />
         <div className="row">
-          Username:{" "}
+          Username:{' '}
           <input
+            placeholder="username"
             type="text"
-            value={username}
             required
-            onChange={updateUsernameHandler}
-          />{" "}
+            onChange={e => setLoginUsername(e.target.value)}
+          />{' '}
           <br />
         </div>
         <div className="row">
-          Password:{" "}
+          Password:{' '}
           <input
+            placeholder="password"
             type="password"
-            value={password}
             required
-            onChange={updatePasswordHandler}
-          />{" "}
+            onChange={e => setLoginPassword(e.target.value)}
+          />{' '}
           <br />
         </div>
         <button
-          className={btnSelected ? "submitBtn" : "submitBtnDisabled"}
+          className={btnSelected ? 'submitBtn' : 'submitBtnDisabled'}
           type="submit"
           disabled={btnSelected ? false : true}
         >
           Submit
-        </button>{" "}
+        </button>{' '}
         <br />
         <p>{displayedText()}</p>
       </form>

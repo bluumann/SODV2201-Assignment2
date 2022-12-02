@@ -1,20 +1,36 @@
-import React from "react";
-import { useState } from "react";
+import React from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 
-const DisplayArray = (props) => {
-  const [searchValue, setSearchValue] = useState("");
-  const searchGo = (event) => {
+const DisplayArray = props => {
+  const [searchValue, setSearchValue] = useState('');
+  const searchGo = event => {
     setSearchValue(event.target.value);
   };
 
-  var currentStudent = props.registeredStudents.find(student => student.username === props.currentUser.username)
-  
-  console.log(props.currentUser.username)
-  
-  if(!props.currentUser.username == "") var arr = currentStudent.registeredCourses;
-  if(props.currentUser.username == "") var arr = [];
+  var arr;
+  axios({
+    method: 'GET',
+    withCredentials: true,
+    url: 'http://localhost:5000/getLoggedInUsername',
+  })
+    .then(res => {
+      props.currentUser.username = res.data;
+      console.log('set current user: ' + props.currentUser.username);
+    })
+    .then(res => {
+      var currentStudent = props.registeredStudents.find(
+        student => student.username === props.currentUser.username
+      );
+      console.log(props.registeredStudents);
+      console.log(props.currentUser.username);
+      console.log(currentStudent.username);
+      if (!props.currentUser.username == '')
+        arr = currentStudent.registeredCourses;
+      if (props.currentUser.username == '') arr = [];
+    });
 
-  const resultArr = [...arr].filter((course) =>
+  const resultArr = [...arr].filter(course =>
     (course.courseName + course.courseCode)
       .toLowerCase()
       .includes(searchValue.toLowerCase())
@@ -45,7 +61,7 @@ const DisplayArray = (props) => {
                       .localeCompare(course2.courseTerm.toString()) ||
                     course1.courseCode > course2.courseCode
                 )
-                .map((courses) => (
+                .map(courses => (
                   <tr key={courses.courseCode}>
                     <td>{courses.courseCode}</td>
                     <td>{courses.courseName}</td>
