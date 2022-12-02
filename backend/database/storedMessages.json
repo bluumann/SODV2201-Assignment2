@@ -1,0 +1,22 @@
+{
+  "messages": [
+    {
+      "firstName": "Bugs",
+      "lastName": "Bunny",
+      "email": "bugsbunny@gmail.com",
+      "message": "Hi there, I'd like to enroll in 3 courses. Also, I'm a bunny"
+    },
+    {
+      "firstName": "John",
+      "lastName": "Smith",
+      "email": "js123@email",
+      "message": "Hello, do you offer any courses on artificial intelligence?"
+    },
+    {
+      "firstName": "Stephen",
+      "lastName": "King",
+      "email": "horror@hotmail",
+      "message": "Who should I talk to about student loans?"
+    }
+  ]
+}

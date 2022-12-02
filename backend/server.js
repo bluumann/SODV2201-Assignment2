@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const app = express();
 const port = 5000;
-const messageDataURL = './database/messages.json';
+const messageDataURL = './database/storedMessages.json';
 
 app.use(express.json());
 app.use(cors());

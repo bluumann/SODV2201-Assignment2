@@ -54,11 +54,6 @@ const ContactForm = props => {
     }
   };
 
-  useEffect(() => {
-    fetch("http://localhost:5000/questions")
-     .then(response => response.json())
-     .then(data => setMsgInfo(data));
-  }, [])
 
   return (
     <div className='wrapper'>
