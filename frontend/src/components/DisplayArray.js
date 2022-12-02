@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const DisplayArray = props => {
   const [searchValue, setSearchValue] = useState('');
@@ -10,10 +10,10 @@ const DisplayArray = props => {
 
   var arr = props.courseCode;
 
-  // PETER
+  // PETER;
   // useEffect(() => {
   //   axios.get('http://localhost:5000/api/courses').then(response => {
-  //     setDisplayArray(response.data.courses);
+  //     setDisplayArray(response.data.Courses);
   //   });
   // }, []);
 

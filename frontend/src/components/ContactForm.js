@@ -1,62 +1,60 @@
 import React, { useEffect, useState } from 'react';
 
-
 const ContactForm = props => {
-
   const [msgInfo, setMsgInfo] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    message: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: '',
   });
 
   //Single handler to handle form input changes
-  const changeHandler = (e) => {
-    setMsgInfo({...msgInfo, [e.target.name]: e.target.value});
-  }
+  const changeHandler = e => {
+    setMsgInfo({ ...msgInfo, [e.target.name]: e.target.value });
+  };
 
   //To clear form after successful submission
   const resetForm = () => {
     setMsgInfo({
-      firstName: "",
-      lastName: "",
-      email: "",
-      message: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      message: '',
     });
-  }
+  };
 
-  const submitFormHandler = async(event) => {
+  const submitFormHandler = async event => {
     event.preventDefault();
-    
-    if(
+
+    if (
       !msgInfo.firstName ||
       !msgInfo.lastName ||
       !msgInfo.email ||
       !msgInfo.message
     ) {
       alert('Please fill out all fields.');
-    }
-    else{
-      fetch("http://localhost:5000/newmessage", {
-        method: "POST",
+    } else {
+      fetch('http://localhost:5000/newmessage', {
+        method: 'POST',
         body: JSON.stringify(msgInfo),
         headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(() => {
-        console.log("Response received");
-      }).catch((error) => {
-        console.warn("Error: ", error.response.body);
-      });
-      
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(() => {
+          console.log('Response received');
+        })
+        .catch(error => {
+          console.warn('Error: ', error.response.body);
+        });
+
       resetForm();
       alert('Your message has been sent.');
     }
   };
 
-
   return (
-    <div className='wrapper'>
+    <div className="wrapper">
       <form onSubmit={submitFormHandler}>
         <div>
           <h2>First Name: </h2>

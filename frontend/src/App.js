@@ -29,7 +29,7 @@ const App = () => {
   // 'courseData' is then sent as a prop to all relevant components
   useEffect(() => {
     axios.get('http://localhost:5000/api/courses').then(response => {
-      setCourseData(response.data.courses);
+      setCourseData(response.data.Courses);
     });
   }, []);
 

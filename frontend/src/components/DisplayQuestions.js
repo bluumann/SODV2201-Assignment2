@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
-const DisplayQuestions = (props) => {
-
+const DisplayQuestions = props => {
   const [studentQuestions, setStudentQuestions] = useState([]);
 
-    useEffect(() => {
-      fetch("http://localhost:5000/questions")
-        .then(response => response.json())
-        .then((data) => {
-          if(data.length == 0){
-            console.log("No data.");
-          }
-          console.log(data)
-          setStudentQuestions(data);
-        });
-    }, []);
-  
+  useEffect(() => {
+    fetch('http://localhost:5000/questions')
+      .then(response => response.json())
+      .then(data => {
+        if (data.length == 0) {
+          console.log('No data.');
+        }
+        // console.log(data)
+        setStudentQuestions(data);
+      });
+  }, []);
 
   return (
     <div className="questions wrapper">
@@ -37,7 +35,7 @@ const DisplayQuestions = (props) => {
                 <td>{question.firstName}</td>
                 <td>{question.lastName}</td>
                 <td>{question.email}</td>
-                <td style={{width: 'auto'}}>{question.message}</td>
+                <td style={{ width: 'auto' }}>{question.message}</td>
               </tr>
             ))}
           </tbody>
