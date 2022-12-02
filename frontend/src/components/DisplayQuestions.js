@@ -13,8 +13,7 @@ const DisplayQuestions = (props) => {
           }
           console.log(data)
           setStudentQuestions(data);
-        })
-        .then(() => {console.log(studentQuestions)});
+        });
     }, []);
   
 

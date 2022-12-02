@@ -10,28 +10,48 @@ const ContactForm = props => {
     message: "",
   });
 
+  //Single handler to handle form input changes
   const changeHandler = (e) => {
     setMsgInfo({...msgInfo, [e.target.name]: e.target.value});
   }
 
+  //To clear form after successful submission
+  const resetForm = () => {
+    setMsgInfo({
+      firstName: "",
+      lastName: "",
+      email: "",
+      message: "",
+    });
+  }
+
   const submitFormHandler = async(event) => {
     event.preventDefault();
-
-    fetch("http://localhost:5000/newmessage", {
-      method: "POST",
-      body: JSON.stringify(msgInfo),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then((response) => {
-      //console.log(JSON.stringify(msgInfo))
-      console.log("Response received");
-    }).catch((error) => {
-      console.warn("Error: ", error.response.body);
-    });
-
-    alert('Your message has been sent.');
-
+    
+    if(
+      !msgInfo.firstName ||
+      !msgInfo.lastName ||
+      !msgInfo.email ||
+      !msgInfo.message
+    ) {
+      alert('Please fill out all fields.');
+    }
+    else{
+      fetch("http://localhost:5000/newmessage", {
+        method: "POST",
+        body: JSON.stringify(msgInfo),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(() => {
+        console.log("Response received");
+      }).catch((error) => {
+        console.warn("Error: ", error.response.body);
+      });
+      
+      resetForm();
+      alert('Your message has been sent.');
+    }
   };
 
   useEffect(() => {
@@ -81,6 +101,7 @@ const ContactForm = props => {
           <textarea
             name="message"
             maxLength="500"
+            required
             value={msgInfo.message}
             onChange={changeHandler}
           />

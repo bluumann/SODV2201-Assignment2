@@ -1,12 +1,12 @@
-import express, { json } from 'express';
-import cors from 'cors';
-import fs from 'fs';
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 const port = 5000;
 const messageDataURL = './database/messages.json';
 
-app.use(json());
+app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
@@ -29,12 +29,12 @@ else{
   var obj = { messages: [] };
 }
 
+// Gemma
 // API to submit new message/question
 app.post('/newmessage', (req, res) => {
   let reply = "Success";
   let check = true;
 
-  // I don't think this validation works and I'm not sure why
   if(
     !req.body.firstName ||
     !req.body.lastName ||
@@ -71,8 +71,6 @@ app.post('/newmessage', (req, res) => {
       }
       else {
         console.log("Data successfully written to file.\n");
-        // console.log("Content of file: ");
-        // console.log(fs.readFileSync('./database/data.json', "utf-8"));
       }
     });
     res.send(contactRequest);
@@ -80,6 +78,7 @@ app.post('/newmessage', (req, res) => {
  
 });
 
+// Gemma
 // API to retrieve all messages
 app.get('/questions', (req, res) => {
   if(obj.messages == []){
