@@ -3,6 +3,9 @@ const cors = require('cors');
 const express = require('express');
 const fs = require('fs');
 
+const path = require('path');
+const bodyParser = require('body-parser');
+
 const app = express();
 const port = 5000;
 
@@ -175,14 +178,73 @@ app.use(express.urlencoded({ extended: true }));
 
 // PETER
 // Loading courses from database/courseData.json
-if (fs.existsSync('database/courseData.json')) {
-  let data = fs.readFileSync('database/courseData.json', 'utf8');
-  courseData = JSON.parse(data);
-} else {
-  console.log(
-    'Could not load courses from database/courses.json - Check if file exists.'
+
+//DATABASE:
+var userStore;
+var courseStore;
+var messageStore;
+
+//Looking for existing User file.
+if (fs.existsSync(path.join(__dirname, 'database', 'storedUsers.json'))) {
+  userStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedUsers.json')));
+  console.log('Loaded file from storedUsers.json');
+} 
+else {
+  userStore = { Users: [] };
+  fs.writeFile(
+    path.join(__dirname, 'database', 'storedUsers.json'),
+    JSON.stringify(userStore, null, 2), fileCreated
   );
+  function fileCreated() {
+    console.log('Created file storedUsers.json');
+  }
 }
+
+//Looking for existing Course file.
+if (fs.existsSync(path.join(__dirname, 'database', 'storedCourses.json'))) {
+    courseStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedCourses.json')));
+    console.log('Loaded file from storedCourses.json');
+  } 
+  else {
+    courseStore = { Courses: [] };
+    fs.writeFile(
+      path.join(__dirname, 'database', 'storedCourses.json'),
+      JSON.stringify(courseStore, null, 2), fileCreated
+    );
+    function fileCreated() {
+      console.log('Created file storedCourses.json');
+    }
+  }
+
+  //Looking for existing question file.
+if (fs.existsSync(path.join(__dirname, 'database', 'storedMessages.json'))) {
+  messageStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedMessages.json')));
+  console.log('Loaded file from storedMessages.json');
+} 
+else {
+  messageStore = { Messages: [] };
+  fs.writeFile(
+    path.join(__dirname, 'database', 'storedMessages.json'),
+    JSON.stringify(messageStore, null, 2), fileCreated
+  );
+  function fileCreated() {
+    console.log('Created file storedMessages.json');
+  }
+}
+
+
+  //APIs for recovering Data.
+app.get('/userData', function (req, res) {
+    res.sendFile(__dirname + '/database/storedUsers.json');
+  });
+
+app.get('/courseData', function (req, res) {
+    res.sendFile(__dirname + '/database/storedCourses.json');
+  });
+
+  app.get('/courseData', function (req, res) {
+    res.sendFile(__dirname + '/database/storedMessages.json');
+  });
 
 // PETER
 // API (GET): retrieve all courses
