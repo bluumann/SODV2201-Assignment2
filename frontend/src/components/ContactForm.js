@@ -1,44 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 
 const ContactForm = props => {
-  const [firstnameInput, setFirstnameInput] = useState('');
-  const [lastnameInput, setLastnameInput] = useState('');
-  const [emailInput, setEmailInput] = useState('');
-  const [messageInput, setMessageInput] = useState('');
 
-  // Event handlers
-  const firstnameChangeHandler = event => {
-    setFirstnameInput(event.target.value);
-  };
-  const lastnameChangeHandler = event => {
-    setLastnameInput(event.target.value);
-  };
-  const emailChangeHandler = event => {
-    setEmailInput(event.target.value);
-  };
-  const messageChangeHandler = event => {
-    setMessageInput(event.target.value);
-  };
-  const submitFormHandler = event => {
+  const [msgInfo, setMsgInfo] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: "",
+  });
+
+  //Single handler to handle form input changes
+  const changeHandler = (e) => {
+    setMsgInfo({...msgInfo, [e.target.name]: e.target.value});
+  }
+
+  //To clear form after successful submission
+  const resetForm = () => {
+    setMsgInfo({
+      firstName: "",
+      lastName: "",
+      email: "",
+      message: "",
+    });
+  }
+
+  const submitFormHandler = async(event) => {
     event.preventDefault();
-
-    alert('Your message has been sent.');
-
-    const submittedFormData = {
-      firstName: firstnameInput,
-      lastName: lastnameInput,
-      email: emailInput,
-      message: messageInput,
-    };
-
-    // Log form data to the console
-    //console.log(submittedFormData);
-    props.onSubmitForm(submittedFormData);
-    setFirstnameInput('');
-    setLastnameInput('');
-    setEmailInput('');
-    setMessageInput('');
+    
+    if(
+      !msgInfo.firstName ||
+      !msgInfo.lastName ||
+      !msgInfo.email ||
+      !msgInfo.message
+    ) {
+      alert('Please fill out all fields.');
+    }
+    else{
+      fetch("http://localhost:5000/newmessage", {
+        method: "POST",
+        body: JSON.stringify(msgInfo),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(() => {
+        console.log("Response received");
+      }).catch((error) => {
+        console.warn("Error: ", error.response.body);
+      });
+      
+      resetForm();
+      alert('Your message has been sent.');
+    }
   };
+
 
   return (
     <div className='wrapper'>
@@ -47,38 +62,43 @@ const ContactForm = props => {
           <h2>First Name: </h2>
           <input
             type="text"
+            name="firstName"
             maxLength="30"
             required
-            value={firstnameInput}
-            onChange={firstnameChangeHandler}
+            value={msgInfo.firstName}
+            onChange={changeHandler}
           />
         </div>
         <div>
           <h2>Last Name: </h2>
           <input
             type="text"
+            name="lastName"
             maxLength="30"
             required
-            value={lastnameInput}
-            onChange={lastnameChangeHandler}
+            value={msgInfo.lastName}
+            onChange={changeHandler}
           />
         </div>
         <div>
           <h2>Email: </h2>
           <input
             type="email"
+            name="email"
             maxLength="50"
             required
-            value={emailInput}
-            onChange={emailChangeHandler}
+            value={msgInfo.email}
+            onChange={changeHandler}
           />
         </div>
         <div>
           <h2>Message: </h2>
           <textarea
+            name="message"
             maxLength="500"
-            value={messageInput}
-            onChange={messageChangeHandler}
+            required
+            value={msgInfo.message}
+            onChange={changeHandler}
           />
         </div>
         <div className="button-div">

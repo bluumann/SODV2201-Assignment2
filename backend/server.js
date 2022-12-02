@@ -12,6 +12,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const messageDataURL = './database/storedMessages.json';
 
 /**** WAS MADE FOR TESTING ON MY END CAN IGNORE (COLIN) CAN BE DELETED AT LATER DATE *****/
 // let objData;
@@ -186,14 +187,16 @@ var messageStore;
 
 //Looking for existing User file.
 if (fs.existsSync(path.join(__dirname, 'database', 'storedUsers.json'))) {
-  userStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedUsers.json')));
+  userStore = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'database', 'storedUsers.json'))
+  );
   console.log('Loaded file from storedUsers.json');
-} 
-else {
+} else {
   userStore = { Users: [] };
   fs.writeFile(
     path.join(__dirname, 'database', 'storedUsers.json'),
-    JSON.stringify(userStore, null, 2), fileCreated
+    JSON.stringify(userStore, null, 2),
+    fileCreated
   );
   function fileCreated() {
     console.log('Created file storedUsers.json');
@@ -202,49 +205,52 @@ else {
 
 //Looking for existing Course file.
 if (fs.existsSync(path.join(__dirname, 'database', 'storedCourses.json'))) {
-    courseStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedCourses.json')));
-    console.log('Loaded file from storedCourses.json');
-  } 
-  else {
-    courseStore = { Courses: [] };
-    fs.writeFile(
-      path.join(__dirname, 'database', 'storedCourses.json'),
-      JSON.stringify(courseStore, null, 2), fileCreated
-    );
-    function fileCreated() {
-      console.log('Created file storedCourses.json');
-    }
+  courseStore = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'database', 'storedCourses.json'))
+  );
+  console.log('Loaded file from storedCourses.json');
+} else {
+  courseStore = { Courses: [] };
+  fs.writeFile(
+    path.join(__dirname, 'database', 'storedCourses.json'),
+    JSON.stringify(courseStore, null, 2),
+    fileCreated
+  );
+  function fileCreated() {
+    console.log('Created file storedCourses.json');
   }
+}
 
-  //Looking for existing question file.
+//Looking for existing question file.
 if (fs.existsSync(path.join(__dirname, 'database', 'storedMessages.json'))) {
-  messageStore = JSON.parse(fs.readFileSync(path.join(__dirname, 'database', 'storedMessages.json')));
+  messageStore = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'database', 'storedMessages.json'))
+  );
   console.log('Loaded file from storedMessages.json');
-} 
-else {
+} else {
   messageStore = { Messages: [] };
   fs.writeFile(
     path.join(__dirname, 'database', 'storedMessages.json'),
-    JSON.stringify(messageStore, null, 2), fileCreated
+    JSON.stringify(messageStore, null, 2),
+    fileCreated
   );
   function fileCreated() {
     console.log('Created file storedMessages.json');
   }
 }
 
-
-  //APIs for recovering Data.
+//APIs for recovering Data.
 app.get('/userData', function (req, res) {
-    res.sendFile(__dirname + '/database/storedUsers.json');
-  });
+  res.sendFile(__dirname + '/database/storedUsers.json');
+});
 
 app.get('/courseData', function (req, res) {
-    res.sendFile(__dirname + '/database/storedCourses.json');
-  });
+  res.sendFile(__dirname + '/database/storedCourses.json');
+});
 
-  app.get('/courseData', function (req, res) {
-    res.sendFile(__dirname + '/database/storedMessages.json');
-  });
+app.get('/courseData', function (req, res) {
+  res.sendFile(__dirname + '/database/storedMessages.json');
+});
 
 // PETER
 // API (GET): retrieve all courses
@@ -514,6 +520,73 @@ app.post('/newstudent', (req, res) => {
   }
 });
 /***** END OF COLIN *****/
+
+// Checking for file
+var exists = fs.existsSync(messageDataURL);
+if (exists) {
+  var data = fs.readFileSync(messageDataURL, 'utf-8');
+  obj = JSON.parse(data);
+} else {
+  // Create the data object if the file does not exist
+  console.log('Creating data object');
+  var obj = { messages: [] };
+}
+
+// Gemma
+// API to submit new message/question
+app.post('/newmessage', (req, res) => {
+  let reply = 'Success';
+  let check = true;
+
+  if (
+    !req.body.firstName ||
+    !req.body.lastName ||
+    !req.body.email ||
+    !req.body.message
+  ) {
+    check = false;
+    reply = 'Please fill out all fields.';
+  }
+
+  if (!check) {
+    res.send(reply);
+  }
+
+  if (check) {
+    // Create Contact Request object to store properties from msgInfo
+    const contactRequest = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      message: req.body.message,
+    };
+
+    // Push the current contact request to the data object
+    obj.messages.push(contactRequest);
+
+    // Convert the JS object to a JSON string
+    let data = JSON.stringify(obj, null, 2);
+
+    // Write the JSON string to file
+    fs.writeFile(messageDataURL, data, err => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Data successfully written to file.\n');
+      }
+    });
+    res.send(contactRequest);
+  }
+});
+
+// Gemma
+// API to retrieve all messages
+app.get('/questions', (req, res) => {
+  if (obj.messages == []) {
+    res.send('There are no messages.');
+  }
+  res.send(obj.messages);
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

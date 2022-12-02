@@ -1,20 +1,21 @@
-import React from 'react';
-// import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const DisplayQuestions = props => {
-  // const [searchValue, setSearchValue] = useState('');
-  // const searchGo = event => {
-  //   const resultArr = [...arr].filter(course =>
-  //     course.courseName.includes(searchValue)
-  //   );
-  //   setSearchValue(event.target.value);
-  // };
+const DisplayQuestions = (props) => {
 
-  var studentQuestions = props.studentQuestions;
+  const [studentQuestions, setStudentQuestions] = useState([]);
 
-  // const resultArr = [...arr].filter(course =>
-  //   course.courseName.includes(searchValue)
-  // );
+    useEffect(() => {
+      fetch("http://localhost:5000/questions")
+        .then(response => response.json())
+        .then((data) => {
+          if(data.length == 0){
+            console.log("No data.");
+          }
+          console.log(data)
+          setStudentQuestions(data);
+        });
+    }, []);
+  
 
   return (
     <div className="questions wrapper">
