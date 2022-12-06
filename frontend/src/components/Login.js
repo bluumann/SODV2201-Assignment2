@@ -47,12 +47,12 @@ const Login = props => {
         if (btnAdminSelected) {
           console.log('logging admin');
 
-          navigate('/admin');
+          navigate('/admin/search');
         }
         if (btnStudentSelected) {
           //navigate()
           console.log('logging stud');
-          navigate('/student');
+          navigate('/student/search');
         }
       } else {
         alert('Invalid Login Information! please try again');
