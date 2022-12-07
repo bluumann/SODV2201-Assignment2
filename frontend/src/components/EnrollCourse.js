@@ -32,7 +32,7 @@ const EnrollCourse = (props) => {
           return navigate("/student/signup");
         }
         if (
-          props.students.some(
+          studentList.some(
             (student) =>
               student.username === props.currentUser.username &&
               student.program === "Upgrade" &&
@@ -103,9 +103,23 @@ const EnrollCourse = (props) => {
         courses = student.registeredCourses;
     });
     if (courses != undefined) {
+      console.log("Working")
+      console.log(courses)
       setEnrolledCourses(courses);
     }
   }, [initialCheck]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      withCredentials: true,
+      url: "http://localhost:5000/getLoggedInUsername",
+    })
+      .then((res) => {
+        props.currentUser.username = res.data;
+        console.log("set current user: " + props.currentUser.username);
+      })
+  }, [])
 
   return (
     <div>

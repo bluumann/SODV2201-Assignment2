@@ -47,7 +47,7 @@ const DisplayArray = props => {
             .includes(searchValue.toLowerCase())
         ))
       })
-  }, [studentList])
+  }, [studentList, searchValue])
 
   return (
     <div>

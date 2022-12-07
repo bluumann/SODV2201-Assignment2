@@ -24,7 +24,7 @@ const Landing = (props) => {
           . Or feel free to <Link to="/student/form">contact us</Link>.{' '}
         </p>{' '}
         <br />
-        <Link to="/student/view">View Courses</Link>
+        <Link to="/student/search">View Courses</Link>
       </div>
       <Login students={props.students} admins={props.admins} updateUser={props.updateUser} />
     </div>

@@ -193,6 +193,47 @@
           "courseDescription": "In this course you will learn more advanced and in-depth features within the C++ programming language."
         }
       ]
+    },
+    {
+      "firstName": "Test",
+      "lastName": "Five",
+      "email": "Test5@test.com",
+      "phone": "123-456-7890",
+      "dateOfBirth": "2020-02-02",
+      "department": "IT",
+      "program": "Upgrade",
+      "studentID": 685320,
+      "username": "test5",
+      "password": "test",
+      "registeredCourses": [
+        {
+          "courseCode": "PM111",
+          "courseName": "Intro to Project Management",
+          "courseTerm": 1,
+          "courseStartDate": "2022-09-06",
+          "courseEndDate": "2022-12-16",
+          "courseFees": "676.67",
+          "courseDescription": "This is a course where we will introduce you to basic Project Management concepts."
+        },
+        {
+          "courseCode": "NET222",
+          "courseName": "Networking",
+          "courseTerm": 2,
+          "courseStartDate": "2023-01-09",
+          "courseEndDate": "2023-04-21",
+          "courseFees": "533.66",
+          "courseDescription": "In this course you will be introduced to the basics of networking and how to setup a home network."
+        },
+        {
+          "courseCode": "NET444",
+          "courseName": "Advanced Networking",
+          "courseTerm": 4,
+          "courseStartDate": "2024-01-08",
+          "courseEndDate": "2024-04-19",
+          "courseFees": "713.67",
+          "courseDescription": "In this course you will learn more advanced networking techniques and learn how to set up a mid-sized office network."
+        }
+      ]
     }
   ]
 }
