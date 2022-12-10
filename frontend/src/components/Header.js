@@ -14,7 +14,7 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const [loggedInUserName, SetLoggedInUserName] = useState(null);
+  // const [loggedInUserName, SetLoggedInUserName] = useState(null);
 
   const getLoggedInUser = () => {
     console.log('getting user name');
@@ -31,37 +31,32 @@ const Header = () => {
           method: 'GET',
           withCredentials: true,
           url: 'http://localhost:5000/getLoggedInUsername',
-        })
-          .then(res => {
-            console.log(res.data);
-            SetLoggedInUserName(res.data);
-          })
-          .then(res => {
-            console.log(loggedInUserName);
+        }).then(res => {
+          console.log(res.data);
 
-            //console.log("Getting username: "+req.user.username);
-            if (loggedInUserName != null) {
-              console.log('current: location: ' + location.pathname);
-              /*
-              if(location.pathname='/student/signup'){
-                document.getElementById('loggedInInformation').innerHTML ="Please Sign up below!";
-              }
-              if(location.pathname='/'){
-                document.getElementById('loggedInInformation').innerHTML ="Please Login Below!";
-              }*/
-              document.getElementById('loggedInInformation').innerHTML =
-                'Logged in as: ' + loggedInUserName;
-              document.getElementById('logoutButton').removeAttribute('hidden');
-              console.log('updated logged in info');
+          //console.log("Getting username: "+req.user.username);
+          if (res.data != null) {
+            console.log('current: location: ' + location.pathname);
+            /*
+            if(location.pathname='/student/signup'){
+              document.getElementById('loggedInInformation').innerHTML ="Please Sign up below!";
             }
-          });
-      } else {
-        console.log('there is not a user logged in');
-        document.getElementById('loggedInInformation').innerHTML =
-          'Not logged in!';
-        document
-          .getElementById('logoutButton')
-          .setAttribute('hidden', 'hidden');
+            if(location.pathname='/'){
+              document.getElementById('loggedInInformation').innerHTML ="Please Login Below!";
+            }*/
+            document.getElementById('loggedInInformation').innerHTML =
+              'Logged in as: ' + res.data;
+            document.getElementById('logoutButton').removeAttribute('hidden');
+            console.log('updated logged in info');
+          } else {
+            console.log('there is not a user logged in');
+            document.getElementById('loggedInInformation').innerHTML =
+              'Not logged in!';
+            document
+              .getElementById('logoutButton')
+              .setAttribute('hidden', 'hidden');
+          }
+        });
       }
     });
   };
