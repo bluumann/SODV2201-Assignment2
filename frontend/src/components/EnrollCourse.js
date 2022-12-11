@@ -36,7 +36,7 @@ const EnrollCourse = (props) => {
         (student) =>
           student.username === props.currentUser.username &&
           student.program === "Upgrade" &&
-          student.registeredCourses.length === 3
+          (student.registeredCourses.length === 3 || enrolledCourses.length >= 3)
       )
     )
       return alert(
@@ -151,11 +151,22 @@ const EnrollCourse = (props) => {
           <label>Enroll in Course: </label>
           <select required onChange={selectedHandler}>
             <option value=""></option>
-            {props.courseCode.map((courseCode) => (
-              <option value={courseCode.courseName} key={courseCode.courseName}>
-                {courseCode.courseName}
-              </option>
-            ))}
+            {props.courseCode
+              .sort(
+                (course1, course2) =>
+                  course1.courseTerm
+                    .toString()
+                    .localeCompare(course2.courseTerm.toString()) ||
+                  course1.courseCode > course2.courseCode
+              )
+              .map((courseCode) => (
+                <option
+                  value={courseCode.courseName}
+                  key={courseCode.courseName}
+                >
+                  {courseCode.courseName}
+                </option>
+              ))}
           </select>
           <button type="submit"> Ok</button>
           <br></br>
