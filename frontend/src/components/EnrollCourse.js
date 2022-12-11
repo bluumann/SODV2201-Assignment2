@@ -1,126 +1,149 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import axios from 'axios';
+import React from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import axios from "axios";
 
-const EnrollCourse = props => {
+const EnrollCourse = (props) => {
   const [studentList, setStudentList] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState();
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const navigate = useNavigate();
 
-  const selectedHandler = event => {
+  const selectedHandler = (event) => {
     setSelectedCourse(event.target.value);
   };
 
-  const enrollCourse = event => {
+  const enrollCourse = (event) => {
     event.preventDefault();
     let newCourse;
 
-    axios({
-      method: 'GET',
-      withCredentials: true,
-      url: 'http://localhost:5000/getLoggedInUsername',
-    })
-      .then(res => {
-        props.currentUser.username = res.data;
-        console.log('set current user: ' + props.currentUser.username);
-      })
-      .then(res => {
-        if (props.currentUser.username === '') {
-          alert('You must register first!');
-          return navigate('/student/signup');
+    // axios({
+    //   method: 'GET',
+    //   withCredentials: true,
+    //   url: 'http://localhost:5000/getLoggedInUsername',
+    // })
+    //   .then(res => {
+    //     props.currentUser.username = res.data;
+    //     console.log('set current user: ' + props.currentUser.username);
+    //   })
+    //   .then(res => {
+    if (props.currentUser.username === "") {
+      alert("You must register first!");
+      return navigate("/student/signup");
+    }
+    if (
+      studentList.some(
+        (student) =>
+          student.username === props.currentUser.username &&
+          student.program === "Upgrade" &&
+          student.registeredCourses.length === 3
+      )
+    )
+      return alert(
+        "You cannot register for more than 3 courses while upgrading"
+      );
+    if (
+      !enrolledCourses.some((course) => course.courseName === selectedCourse)
+    ) {
+      props.courseCode.map((course) => {
+        if (course.courseName === selectedCourse) {
+          newCourse = course;
         }
-        if (
-          studentList.some(
-            student =>
-              student.username === props.currentUser.username &&
-              student.program === 'Upgrade' &&
-              student.registeredCourses.length === 3
-          )
-        )
-          return alert(
-            'You cannot register for more than 3 courses while upgrading'
-          );
-        if (
-          !enrolledCourses.some(course => course.courseName === selectedCourse)
-        ) {
-          props.courseCode.map(course => {
-            if (course.courseName === selectedCourse) {
-              newCourse = course;
-            }
-          });
-          setEnrolledCourses(prevState => [...prevState, newCourse]);
-        } else return alert('You have already registered for this course!');
-        props.enrollCourse(newCourse);
-        console.log(enrolledCourses);
-        setStudentList(current =>
-          current.map(obj => {
-            if (obj.username === props.currentUser.username) {
-              return { ...obj, registeredCourses: enrolledCourses };
-            }
-            return obj;
-          })
-        );
+      });
+      setEnrolledCourses((prevState) => [...prevState, newCourse]);
+    } else return alert("You have already registered for this course!");
+    //props.enrollCourse(newCourse);
+    console.log(enrolledCourses);
+    setStudentList((current) =>
+      current.map((obj) => {
+        if (obj.username === props.currentUser.username) {
+          return { ...obj, registeredCourses: enrolledCourses };
+        }
+        return obj;
       })
-      .then(() => sendData(newCourse));
-  };
+    );
+    //})
+    //.then(() =>
+    //sendData(newCourse)//);
 
-  function sendData(newCourse) {
-    console.log('called');
     let dataToSend = {
       username: props.currentUser.username,
       newCourse: newCourse,
     };
-    fetch('http://localhost:5000/enrollcourse', {
-      method: 'POST',
+    fetch("http://localhost:5000/enrollcourse", {
+      method: "POST",
       body: JSON.stringify(dataToSend),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }).then(response => {
+    }).then((response) => {
       console.log(response.data);
       if (response.status >= 200 && response.status < 300);
-      else alert('Something went wrong, please try again later.');
+      else alert("Something went wrong, please try again later.");
     });
-  }
+  };
 
-  const [initialCheck, setInitialCheck] = useState(0);
+  // function sendData(newCourse) {
+  //   console.log('called');
+  //   let dataToSend = {
+  //     username: props.currentUser.username,
+  //     newCourse: newCourse,
+  //   };
+  //   fetch('http://localhost:5000/enrollcourse', {
+  //     method: 'POST',
+  //     body: JSON.stringify(dataToSend),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   }).then(response => {
+  //     console.log(response.data);
+  //     if (response.status >= 200 && response.status < 300);
+  //     else alert('Something went wrong, please try again later.');
+  //   });
+  // }
+
+  const [initialRun, setInitialRun] = useState(0);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/studentlist")
+      .then((response) => response.json())
+      .then((data) => setStudentList(data))
+      .then(() => setInitialRun(1));
+  }, []);
+
+  let arr;
 
   useEffect(() => {
     axios({
-      method: 'GET',
+      method: "GET",
       withCredentials: true,
-      url: 'http://localhost:5000/getLoggedInUsername',
-    }).then(res => {
-      props.currentUser.username = res.data;
-      console.log('set current user: ' + props.currentUser.username);
-    });
-  }, []);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/studentlist')
-      .then(response => response.json())
-      .then(data => setStudentList(data))
-      .then(() => setInitialCheck(1));
-  }, []);
-
-  useEffect(() => {
-    let courses;
-    studentList.map(student => {
-      if (student.username === props.currentUser.username)
-        courses = student.registeredCourses;
-    });
-    if (courses != undefined) {
-      console.log('Working');
-      console.log(courses);
-      setEnrolledCourses(courses);
-    }
-  }, [initialCheck]);
+      url: "http://localhost:5000/getLoggedInUsername",
+    })
+      .then((res) => {
+        props.currentUser.username = res.data;
+        console.log("set current user: " + props.currentUser.username);
+      })
+      .then((res) => {
+        var currentStudent = studentList.find(
+          (student) => student.username === props.currentUser.username
+        );
+        console.log(studentList);
+        console.log(props.currentUser.username);
+        console.log(currentStudent.username);
+        if (!props.currentUser.username == "") {
+          arr = currentStudent.registeredCourses;
+          console.log(arr);
+        }
+        if (props.currentUser.username == "") arr = [];
+      })
+      .then((res) => {
+        setEnrolledCourses(arr);
+      });
+  }, [initialRun]);
 
   return (
     <div>
-      {console.log('onload')}
+      {console.log("onload")}
       {console.log(enrolledCourses)}
       {console.log(studentList)}
       <div>
@@ -128,7 +151,7 @@ const EnrollCourse = props => {
           <label>Enroll in Course: </label>
           <select required onChange={selectedHandler}>
             <option value=""></option>
-            {props.courseCode.map(courseCode => (
+            {props.courseCode.map((courseCode) => (
               <option value={courseCode.courseName} key={courseCode.courseName}>
                 {courseCode.courseName}
               </option>
@@ -157,7 +180,7 @@ const EnrollCourse = props => {
                       .localeCompare(course2.courseTerm.toString()) ||
                     course1.courseCode > course2.courseCode
                 )
-                .map(courses => (
+                .map((courses) => (
                   <tr key={courses.courseCode}>
                     <td>{courses.courseCode}</td>
                     <td>{courses.courseName}</td>

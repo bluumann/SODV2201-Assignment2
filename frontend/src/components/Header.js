@@ -5,7 +5,7 @@ import '../index.css';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const Header = () => {
+const Header = (props) => {
   const location = useLocation();
   useEffect(() => {
     console.log('url changed');
@@ -75,6 +75,9 @@ const Header = () => {
     if (document.getElementById('logoutButton')) {
       document.getElementById('logoutButton').setAttribute('hidden', 'hidden');
     }
+    props.currentUser.username = "";
+    alert("Now logging out")
+    navigate('/');
   }
 
   return (
