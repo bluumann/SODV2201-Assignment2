@@ -90,6 +90,27 @@ hr {
   margin: 20px;
 }
 
+#loggedInInformation{
+  position: absolute;
+  left: 20px;
+  top: 110px;
+  z-index: 10;
+}
+
+#logoutButton{
+  border: 1px solid black;
+  position: absolute;
+  left: 150px;
+  top: 100px;
+  background-color: white;
+  color: black;
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
 /* Login */
 
 .btn {

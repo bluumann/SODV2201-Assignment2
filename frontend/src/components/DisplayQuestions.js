@@ -16,7 +16,7 @@ const DisplayQuestions = props => {
   }, []);
 
   return (
-    <div className="questions wrapper">
+    <div className="questions wrapper tableContainer">
       <h1 style={{ fontSize: '2rem' }}>Student Questions:</h1>
       <br />
       <div>

@@ -51,7 +51,7 @@ const DisplayArray = props => {
 
   return (
     <div>
-      <form>
+      <form className="tableContainer">
         <label>Search Course: </label>
         <input type="text" value={searchValue} onChange={searchGo} />
         <div>

@@ -84,15 +84,16 @@ const Header = (props) => {
     <header>
       <div className="nav-area">
         <img src={logo} alt="BVC Logo" className="logo-icon" />
+        <div>
+          {' '}
+          <p id="loggedInInformation">Not logged in!</p>
+          <button hidden id="logoutButton" onClick={logout}>
+            Logout
+          </button>{' '}
+        </div>
         <Dropdown />
       </div>
-      <div>
-        {' '}
-        <p id="loggedInInformation">Not logged in!</p>
-        <button hidden id="logoutButton" onClick={logout}>
-          Click Here To Log Out!
-        </button>{' '}
-      </div>
+      
     </header>
   );
 };
