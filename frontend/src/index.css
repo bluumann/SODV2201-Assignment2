@@ -92,16 +92,17 @@ hr {
 
 #loggedInInformation{
   position: absolute;
-  left: 20px;
-  top: 110px;
-  z-index: 10;
+  right: 20px;
+  top: 150px;
+  color: white;
+  z-index: 2;
 }
 
 #logoutButton{
   border: 1px solid black;
   position: absolute;
-  left: 150px;
-  top: 100px;
+  right: 150px;
+  top: 140px;
   background-color: white;
   color: black;
   padding: 5px;
@@ -109,6 +110,7 @@ hr {
   cursor: pointer;
   border-radius: 5px;
   font-size: 13px;
+  z-index: 2;
 }
 
 /* Login */
